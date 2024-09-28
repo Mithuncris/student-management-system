@@ -1,0 +1,7 @@
+Django
+mysqlclient
+django-crispy-forms
+djangorestframework  # If using DRF for APIs
+Pillow
+gunicorn  # For production, optional
+whitenoise  # For static file handling in production
