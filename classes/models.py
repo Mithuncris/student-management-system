@@ -1,5 +1,5 @@
 from django.db import models
-#from users.models import CustomerUser   
+from users.models import CustomerUser   
 
 class Class(models.Model): 
     students = models.ManyToManyField(CustomerUser, related_name='enrolled_classes', limit_choices_to={'role': 'student'})

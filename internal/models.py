@@ -1,5 +1,5 @@
 from django.db import models
-#from users.models import CustomerUser  
+from users.models import CustomerUser  
 from classes.models import Class       
 
 class InternalMarks(models.Model): 
