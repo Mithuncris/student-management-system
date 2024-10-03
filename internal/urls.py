@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+app_name = 'internal'
 urlpatterns = [
      path('add/', views.add_internal_marks, name='add_internal_marks'),
     path('list/', views.list_internal_marks, name='marks_list'),
