@@ -1,0 +1,18 @@
+<table>
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Total Classes</th>
+            <th>Average Attendance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for summary in class_attendance_summary %}
+        <tr>
+            <td>{{ summary.student__username }}</td>
+            <td>{{ summary.total_classes }}</td>
+            <td>{{ summary.avg_attendance }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

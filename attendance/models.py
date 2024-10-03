@@ -11,6 +11,10 @@ class Period(models.Model):
     def __str__(self):
         return f"{self.name}  ({self.start_time} - {self.end_time})"
     
+    class Meta:
+        verbose_name = "Period"
+        verbose_name_plural = "Periods"
+    
 class Attendance(models.Model):
     date = models.DateField()
     period = models.ForeignKey(Period, on_delete=models.CASCADE)
@@ -21,4 +25,8 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"Attendance for {self.student.username} on {self.date} during {self.period.name}: {self.status}"
+
+    class Meta:
+        verbose_name = "Attendance Record"
+        verbose_name_plural = "Attendance Records"
     

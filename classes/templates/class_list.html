@@ -1,0 +1,25 @@
+<h1>Class List</h1>
+<a href="{% url 'class_create' %}">Add New Class</a>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Subject</th>
+            <th>Staff In Charge</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for class in classes %}
+        <tr>
+            <td>{{ class.name }}</td>
+            <td>{{ class.subject }}</td>
+            <td>{{ class.staff_in_charge }}</td>
+            <td>
+                <a href="{% url 'class_update' class.id %}">Edit</a>
+                <a href="{% url 'class_delete' class.id %}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

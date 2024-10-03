@@ -1,0 +1,7 @@
+<h1>Delete Class</h1>
+<p>Are you sure you want to delete "{{ class.name }}"?</p>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Confirm</button>
+</form>
+<a href="{% url 'class_list' %}">Cancel</a>
