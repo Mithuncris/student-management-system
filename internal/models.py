@@ -9,5 +9,6 @@ class InternalMarks(models.Model):
     staff = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="marks_recorded")
     class_enrolled = models.ForeignKey(Class, on_delete=models.CASCADE)
 
+
     def __str__(self):
         return f"{self.student} - {self.exam_name} - {self.marks}"
