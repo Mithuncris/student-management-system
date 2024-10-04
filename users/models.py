@@ -9,3 +9,6 @@ class CustomUser(AbstractUser):
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
