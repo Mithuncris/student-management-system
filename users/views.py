@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from .forms import CustomUserCreationForm
+from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
+
 
 # Check if user is a student
 def is_student(user):
@@ -17,21 +20,35 @@ def is_staff(user):
 def is_hod(user):
     return user.role == 'hod'
 
-# Registration view
-def register_view(request):
-    if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, f"Welcome {user.username}, your registration was successful!")
-            return redirect('home')
-        else:
-            messages.error(request, "Registration failed. Please correct the errors.")
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
 
+@login_required
+@permission_required('users.can_view_students', raise_exception=True)
+def student_view(request):
+    return render(request, 'student_dashboard.html')
+
+@login_required
+@permission_required('users.can_manage_staff', raise_exception=True)
+def staff_view(request):
+    return render(request, 'staff_dashboard.html')
+
+@login_required
+@permission_required('users.can_view_hod', raise_exception=True)
+def hod_view(request):
+    return render(request, 'hod_dashboard.html')
+
+
+# Registration view
+def assign_role_permissions(user):
+    """ Assign permissions to the user based on their role """
+    if user.role == 'student':
+        permission = Permission.objects.get(codename='can_view_students')
+        user.user_permissions.add(permission)
+    elif user.role == 'staff':
+        permission = Permission.objects.get(codename='can_manage_staff')
+        user.user_permissions.add(permission)
+    elif user.role == 'hod':
+        permission = Permission.objects.get(codename='can_view_hod')
+        user.user_permissions.add(permission)
 
 def login_view(request):
     if request.method == "POST":
@@ -49,7 +66,7 @@ def login_view(request):
                     return redirect('users:student_dashboard')  # Redirect to student dashboard
                 elif user.role == 'staff':
                     return redirect('users:staff_dashboard')  # Redirect to staff dashboard
-                elif user.role == 'HOD':
+                elif user.role == 'hod':
                     return redirect('users:hod_dashboard')  # Redirect to HOD dashboard
                 else:
                     return redirect('users:home')  # Default redirect if no role matches
@@ -68,33 +85,114 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect('login')
+    return redirect('users:login')
 
 # Home view (login required)
 @login_required
 def home_view(request):
     return render(request, 'home.html')
 
-# Example view for students
-@login_required
-@user_passes_test(is_student)
-def student_view(request):
-    return render(request, 'student_dashboard.html')  # Create this template
-
-# Example view for staff
+# For student registration:
 @login_required
 @user_passes_test(is_staff)
-def staff_view(request):
-    return render(request, 'staff_dashboard.html')  # Create this template
+def register_student_view(request):
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            student = form.save(commit=False)
+            student.role = 'student'  
+            student.save()
+            assign_role_permissions(student)  
+            messages.success(request, f"Student {student.username} registered successfully!")
+            return redirect('users:staff_dashboard')  
+        else:
+            messages.error(request, "Registration failed. Please correct the errors.")
+    else:
+        form = CustomUserCreationForm()
 
-# Example view for HOD
+    return render(request, 'registration/register_student.html', {'form': form})
+
+# For staff registration:
 @login_required
 @user_passes_test(is_hod)
-def hod_view(request):
-    return render(request, 'hod_dashboard.html')  # Create this template
-
-def login_or_register(request):
-    if request.user.is_authenticated:
-        return redirect('home')
+def register_staff_view(request):
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            staff = form.save(commit=False)
+            staff.role = 'staff'  
+            staff.save()
+            assign_role_permissions(staff)  
+            messages.success(request, f"Staff {staff.username} registered successfully!")
+            return redirect('users:hod_dashboard')  
+        else:
+            messages.error(request, "Registration failed. Please correct the errors.")
     else:
-        return render(request, 'registration/login_or_register.html')
+        form = CustomUserCreationForm()
+
+    return render(request, 'registration/register_staff.html', {'form': form})
+
+# For HOD registration:
+@login_required
+def register_hod_view(request):
+    if not request.user.is_superuser:  
+        return redirect('users:home')
+
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            hod = form.save(commit=False)
+            hod.role = 'hod' 
+            hod.save()
+            assign_role_permissions(hod)  
+            messages.success(request, f"HOD {hod.username} registered successfully!")
+            return redirect('users:home')
+        else:
+            messages.error(request, "Registration failed. Please correct the errors.")
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'registration/register_hod.html', {'form': form})
+
+@login_required
+@user_passes_test(is_hod)  
+def manage_staff_view(request):
+    User = get_user_model()  
+    staff_members = User.objects.filter(role='staff')  
+
+    context = {
+        'staff_members': staff_members
+    }
+
+    return render(request, 'manage_staff.html', context)
+
+@login_required
+@user_passes_test(is_hod)
+def edit_staff_view(request, staff_id):
+    staff_member = get_object_or_404(get_user_model(), id=staff_id, role='staff')
+
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST, instance=staff_member)
+        if form.is_valid():
+            try:
+                form.save()  # This will now not raise an error for existing username
+                messages.success(request, 'Staff member updated successfully.')
+                return redirect('users:manage_staff')
+            except ValidationError as e:
+                form.add_error(None, e)  # Add error to the form if validation fails
+    else:
+        form = CustomUserCreationForm(instance=staff_member)
+
+    return render(request, 'edit_staff.html', {'form': form})
+
+@login_required
+@user_passes_test(is_hod)
+def delete_staff_view(request, staff_id):
+    staff_member = get_object_or_404(get_user_model(), id=staff_id, role='staff')
+
+    if request.method == 'POST':
+        staff_member.delete()
+        messages.success(request, 'Staff member deleted successfully.')
+        return redirect('users:manage_staff')
+
+    return render(request, 'delete_staff.html', {'staff_member': staff_member})
