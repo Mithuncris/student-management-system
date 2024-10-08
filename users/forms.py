@@ -1,15 +1,15 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 
-# Custom form for user registration (extends Django's built-in UserCreationForm)
 class CustomUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2', 'role']  # Include 'password1' and 'password2' for password confirmation
+        fields = ['username', 'email', 'password1', 'password2']
 
-# Custom form for updating user information (extends Django's built-in UserChangeForm)
-class CustomUserChangeForm(UserChangeForm):
-    class Meta(UserChangeForm.Meta):
-        model = CustomUser
-        fields = ['username', 'email', 'role']  # Add other fields you need
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if CustomUser.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
+            raise ValidationError('This username is already in use.')
+        return username
+

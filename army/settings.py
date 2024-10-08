@@ -136,3 +136,8 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # settings.py
 LOGIN_URL = 'users:login'  # Make sure this matches your login URL name
 
+
+# Expire the session when the user closes the browser
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+

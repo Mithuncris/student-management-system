@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Manage Staff</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for staff in staff_members %}
+            <tr>
+                <td>{{ staff.username }}</td>
+                <td>{{ staff.email }}</td>
+                <td>
+                    <a href="{% url 'users:edit_staff' staff.id %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'users:delete_staff' staff.id %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No staff members found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'users:register_staff' %}" class="btn btn-primary">Add Staff</a>
+</div>
+{% endblock %}
