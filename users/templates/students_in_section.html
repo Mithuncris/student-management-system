@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Students in {{ section.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Students in {{ section.name }}</h2>
+    <a href="{% url 'users:add_student' section.id %}" class="btn btn-success">Add Student</a>
+    <table class="container">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Section</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.username }}</td>
+                <td>{{ student.first_name }} {{ student.last_name }}</td>
+                <td>{{ student.department }}</td>
+                <td>{{ student.year.name }}</td>
+                <td>{{ student.section.name }}</td>
+                <td>
+                    <a href="{% url 'users:user_detail' student.id %}">View Details</a> |
+                    <a href="{% url 'users:edit_student' student.id %}">Edit</a> |
+                    <a href="{% url 'users:delete_student' student.id %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</div>
+{% endblock %}

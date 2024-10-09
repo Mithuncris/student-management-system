@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Yearwise Sections{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Yearwise Sections</h2>
+    <ul>
+        {% for year in years %}
+            <li>
+                <a href="{% url 'users:sections_by_year_view' year.id %}">{{ year.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
