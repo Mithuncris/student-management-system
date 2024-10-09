@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Sections in {{ year.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Sections in {{ year.name }}</h2>
+    <ul>
+        {% for section in sections %}
+            <li>
+                <a href="{% url 'users:students_in_section_view' section.id %}">{{ section.name }}</a>
+            </li>
+        {% empty %}
+            <li>No sections found for this year.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

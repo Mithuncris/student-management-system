@@ -1,0 +1,16 @@
+<h2>{{ user.first_name }} {{ user.last_name }}'s Details</h2>
+
+<p><strong>Username:</strong> {{ user.username }}</p>
+<p><strong>Department:</strong> {{ user.department }}</p>
+
+{% if user.role == 'student' %}
+    <p><strong>Year:</strong> {{ user.year.name }}</p>
+    <p><strong>Section:</strong> {{ user.section.name }}</p>
+    <p><strong>Roll Number:</strong> {{ user.roll_number }}</p>
+
+    <a href="{% url 'users:edit_student' user.id %}">Edit User</a> | 
+    <a href="{% url 'users:delete_student' user.id %}">Delete User</a>
+{% endif %}
+
+    <a href="{% url 'users:hod_dashboard' %}">Dashboard<a> 
+
