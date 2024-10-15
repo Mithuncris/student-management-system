@@ -33,21 +33,8 @@
                 Courses
             </div>
             <div class="card-body">
-                <h5 class="card-title">Available Courses</h5>
-                <ul class="list-group">
-                    {% for course in courses %}
-                        <li class="list-group-item">
-                            {{ course.name }} - Handled by: {{ course.description}}  
-                            <br><!-- Update this according to your model -->
-        <a href="{% url 'courses:view_course' course.id %}">View</a><br>
-        <a href="{% url 'courses:edit_course' course.id %}">Edit</a><br>
-        <a href="{% url 'courses:delete_course' course.id %}">Delete</a>
-                        </li>
-                    {% empty %}
-                        <li class="list-group-item">No courses available.</li>
-                    {% endfor %}
-                </ul>
-                <a href="{% url 'courses:add_course' %}" class="btn btn-success mt-3">Add New Course</a>
+                <p>Add, Edit, Delete Courses</p>
+                <a href="{% url 'courses:course_list' %}" class="btn btn-success">Manage Courses</a>
             </div>
         </div>
     </div>

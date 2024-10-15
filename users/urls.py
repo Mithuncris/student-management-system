@@ -28,4 +28,7 @@ urlpatterns = [
     path('hod_dashboard/student/<int:student_id>/edit/', views.edit_student_view, name='edit_student'),
     path('hod_dashboard/student/<int:student_id>/delete/', views.delete_student_view, name='delete_student'),
     path('hod_dashboard/user/<int:user_id>/', views.user_detail_view, name='user_detail'),
+    path('redirection/',views.redirect_users, name='redirection'),
+    path('year/<int:year_id>/add_section/', views.add_section, name='add_section'),
+    path('section/<int:section_id>/delete/', views.delete_section, name='delete_section'),
 ]

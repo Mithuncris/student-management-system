@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
+from .models import CustomUser, Section
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -33,3 +33,8 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class SectionForm(forms.ModelForm):
+    class Meta:
+        model = Section
+        fields = ['name']

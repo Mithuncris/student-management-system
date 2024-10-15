@@ -19,9 +19,9 @@
                 <td>{{ staff.first_name }} {{ staff.last_name }}</td>
                 <td>{{ staff.department }}</td>
                 <td>
-                    <a href="{% url 'users:user_detail' staff.id %}">View Details</a> |
-                    <a href="{% url 'users:edit_staff' staff.id %}">Edit</a> |
-                    <a href="{% url 'users:delete_staff' staff.id %}">Delete</a>
+                    <a href="{% url 'users:user_detail' staff.id %}" class="btn">View Details</a> 
+                    <a href="{% url 'users:edit_staff' staff.id %}" class="btn">Edit</a> 
+                    <a href="{% url 'users:delete_staff' staff.id %}" class="btn">Delete</a>
                 </td>
             </tr>
             {% endfor %}
