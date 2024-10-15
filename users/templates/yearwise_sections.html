@@ -3,13 +3,17 @@
 
 {% block content %}
 <div class="container">
+    <a href="{% url 'users:redirection' %}" class="btn btn-secondary">Back</a>
     <h2>Yearwise Sections</h2>
     <ul>
         {% for year in years %}
             <li>
-                <a href="{% url 'users:sections_by_year_view' year.id %}">{{ year.name }}</a>
+                <a href="{% url 'users:sections_by_year_view' year.id %}" class="btn">{{ year.name }}</a>
             </li>
         {% endfor %}
     </ul>
 </div>
 {% endblock %}
+
+    
+    

@@ -24,7 +24,7 @@ class CustomUser(AbstractUser):
 
     department = models.CharField(max_length=100, null=True, blank=True)
     year = models.ForeignKey(Year, null=True, blank=True, on_delete=models.SET_NULL)
-    section = models.ForeignKey(Section, null=True, blank=True, on_delete=models.SET_NULL)
+    section = models.ForeignKey(Section, null=True, blank=True, on_delete=models.CASCADE)
 
     roll_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
 

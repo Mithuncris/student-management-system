@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, SectionForm
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from .models import CustomUser, Year, Section
@@ -85,6 +85,16 @@ def login_view(request):
 
     return render(request, 'registration/login.html', {'form': form})
 
+def redirect_users(request):
+    user = request.user
+    if user.role == 'student':
+        return redirect('users:student_dashboard')  # Redirect to student dashboard
+    elif user.role == 'staff':
+        return redirect('users:staff_dashboard')  # Redirect to staff dashboard
+    elif user.role == 'hod':
+        return redirect('users:hod_dashboard')  # Redirect to HOD dashboard
+    else:
+        return redirect('users:home')  # Default redirect if no role matches
 
 # Logout view
 @login_required
@@ -195,18 +205,22 @@ def delete_staff_view(request, staff_id):
 
 @login_required
 @user_passes_test(is_hod)
+@login_required
+@user_passes_test(is_hod)
 def yearwise_sections_view(request):
-    years = Year.objects.all()  # Get all Year objects
+    years = Year.objects.all()  
     return render(request, 'yearwise_sections.html', {'years': years})
+
 
 # View to display sections for a specific year
 @login_required
 @user_passes_test(is_hod)
 def sections_by_year_view(request, year_id):
-    year = get_object_or_404(Year, id=year_id)
-    sections = year.sections.all()  # Access the related sections using the related_name
-
+    year = Year.objects.get(id=year_id)  
+    sections = Section.objects.filter(year=year)  
+    
     return render(request, 'sections_by_year.html', {'year': year, 'sections': sections})
+
 
 # View to display students in a specific section
 @login_required
@@ -272,5 +286,25 @@ def add_student_view(request, section_id):
 @login_required
 @user_passes_test(lambda u: u.role == 'hod')
 def user_detail_view(request, user_id):
+
     user = get_object_or_404(CustomUser, id=user_id)
     return render(request, 'user_detail.html', {'user': user})
+
+def add_section(request, year_id):
+    year = Year.objects.get(id=year_id)
+    if request.method == 'POST':
+        form = SectionForm(request.POST)
+        if form.is_valid():
+            section = form.save(commit=False)
+            section.year = year 
+            section.save()
+            return redirect('users:sections_by_year_view', year_id=year.id)  
+    else:
+        form = SectionForm()
+    return render(request, 'add_section.html', {'form': form, 'year': year})
+
+def delete_section(request, section_id):
+    section = get_object_or_404(Section, id=section_id)
+    year_id = section.year.id  
+    section.delete()
+    return redirect('users:sections_by_year_view', year_id=year_id)

@@ -3,15 +3,18 @@
 
 {% block content %}
 <div class="container">
+    <a href="{% url 'users:yearwise_sections_view' %}" class="btn btn-secondary">Back</a>
     <h2>Sections in {{ year.name }}</h2>
     <ul>
         {% for section in sections %}
             <li>
-                <a href="{% url 'users:students_in_section_view' section.id %}">{{ section.name }}</a>
+                <a href="{% url 'users:students_in_section_view' section.id %}" class="btn">{{ section.name }} </a>
+                <a href="{% url 'users:delete_section' section.id %}" class="btn btn-danger">Delete</a>
             </li>
         {% empty %}
             <li>No sections found for this year.</li>
         {% endfor %}
     </ul>
+    <a href="{% url 'users:add_section' year.id %}" class="btn btn-success">Add Section</a>
 </div>
 {% endblock %}
