@@ -1,20 +1,40 @@
-<table>
-    <thead>
-        <tr>
-            <th>Student</th>
-            <th>Date</th>
-            <th>Period</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for record in attendance_records %}
-        <tr>
-            <td>{{ record.student.username }}</td>
-            <td>{{ record.date }}</td>
-            <td>{{ record.period.name }}</td>
-            <td>{{ record.status }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- templates/attendance/staff_attendance.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Attendance Dashboard</title>
+</head>
+<body>
+    <h1>Staff Attendance Dashboard</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="course_id">Select Course:</label>
+        <select name="course_id" required>
+            {% for course in courses %}
+                <option value="{{ course.id }}">{{ course.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="date">Date:</label>
+        <input type="date" name="date" required>
+
+        <label for="period">Period:</label>
+        <input type="text" name="period" required placeholder="e.g., 1st">
+
+        <h3>Students</h3>
+        <ul>
+            {% for student in course.student_set.all %}
+                <li>
+                    <input type="checkbox" name="present_students" value="{{ student.id }}">
+                    {{ student.username }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <button type="submit">Mark Attendance</button>
+    </form>
+</body>
+</html>

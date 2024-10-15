@@ -1,32 +1,27 @@
-# from django.db import models
-# from users.models import CustomUser
-# #from classes.models import Class
+from django.db import models
+from django.conf import settings  # Import settings to use AUTH_USER_MODEL
 
-# # Create your models here.
-# class Period(models.Model):
-#     name = models.CharField(max_length=10)
-#     start_time = models.TimeField()
-#     end_time = models.TimeField()
+class Course(models.Model):
+    name = models.CharField(max_length=100)
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='courses')  # Update this line
 
-#     def __str__(self):
-#         return f"{self.name}  ({self.start_time} - {self.end_time})"
-    
-#     class Meta:
-#         verbose_name = "Period"
-#         verbose_name_plural = "Periods"
-    
-# class Attendance(models.Model):
-#     date = models.DateField()
-#     period = models.ForeignKey(Period, on_delete=models.CASCADE)
-#     status = models.CharField(max_length=10, choices = [('Present', 'Present'), ('Absent', 'Absent'), ('On-Duty', 'On-Duty')])
-#     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="attendances")
-#     class_enrolled = models.ForeignKey(Class, on_delete=models.CASCADE)
-#     staff = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='attendance_records')
+    def __str__(self):
+        return self.name
 
-#     def __str__(self):
-#         return f"Attendance for {self.student.username} on {self.date} during {self.period.name}: {self.status}"
+class Attendance(models.Model):
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='attendance_records')  # Update this line
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='attendance_records')
+    date = models.DateField()
+    period = models.CharField(max_length=10)  # To indicate the period (e.g., "1st", "2nd")
+    present = models.BooleanField(default=False)  # Indicates if the student was present
 
-#     class Meta:
-#         verbose_name = "Attendance Record"
-#         verbose_name_plural = "Attendance Records"
-    
+    class Meta:
+        unique_together = ('student', 'course', 'date', 'period')  # Prevents duplicate entries
+
+    def __str__(self):
+        return f"{self.student.username} - {self.course.name} - {self.date} - {self.period}"
+
+    def get_attendance_percentage(student):
+        total_classes = Attendance.objects.filter(student=student).count()
+        present_classes = Attendance.objects.filter(student=student, present=True).count()
+        return (present_classes / total_classes * 100) if total_classes > 0 else 0
