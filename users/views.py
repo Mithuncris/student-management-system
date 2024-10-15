@@ -8,7 +8,7 @@ from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from .models import CustomUser, Year, Section
 from django.http import Http404
-
+from courses.models import Course 
 
 # Check if user is a student
 def is_student(user):
@@ -36,8 +36,12 @@ def staff_view(request):
 @login_required
 @permission_required('users.can_view_hod', raise_exception=True)
 def hod_view(request):
-    return render(request, 'hod_dashboard.html')
-
+    courses = Course.objects.all()  
+    context = {
+        'courses': courses,
+    }
+    
+    return render(request, 'hod_dashboard.html', context)
 
 # Registration view
 def assign_role_permissions(user):

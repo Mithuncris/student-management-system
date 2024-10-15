@@ -5,9 +5,9 @@ from users import views as users_views  # Import views from the users app
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', users_views.login_view, name='login_view'),  # Main entry point
-    path('attendance/', include('attendance.urls')),
-    path('classes/', include('classes.urls')),
-    path('internal/', include('internal.urls')),
+    #path('attendance/', include('attendance.urls')),
+    path('courses/', include('courses.urls')),
+    #path('internal/', include('internal.urls')),
     path('users/', include('users.urls')),  # Correctly includes users app urls
     path('home/', users_views.home_view, name='home'),  # Ensure home view exists
 ]
