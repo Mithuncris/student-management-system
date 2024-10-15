@@ -1,0 +1,40 @@
+<!-- templates/attendance/hod_attendance.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Attendance Dashboard</title>
+</head>
+<body>
+    <h1>HOD Attendance Dashboard</h1>
+
+    <h2>Attendance by Department</h2>
+    <ul>
+        {% for entry in attendance_by_department %}
+            <li>{{ entry.course__name }} - {{ entry.percentage|floatformat:2 }}%</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Attendance by Year</h2>
+    <ul>
+        {% for entry in attendance_by_year %}
+            <li>{{ entry.student__year }} - {{ entry.percentage|floatformat:2 }}%</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Attendance by Section</h2>
+    <ul>
+        {% for entry in attendance_by_section %}
+            <li>{{ entry.student__section }} - {{ entry.percentage|floatformat:2 }}%</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Attendance by Student</h2>
+    <ul>
+        {% for entry in attendance_by_student %}
+            <li>{{ entry.student__username }} - {{ entry.percentage|floatformat:2 }}%</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
