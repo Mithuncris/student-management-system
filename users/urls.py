@@ -37,7 +37,7 @@ urlpatterns = [
     path('staff/sections/<int:section_id>/students/', views.view_students, name='view_students'),
     path('staff/sections/<int:section_id>/add_student/', views.add_student_view, name='staff_add_student'),
     path('staff/students/<int:student_id>/view/', views.view_student_details, name='view_student_details'),
-    path('staff/students/<int:student_id>/edit/', views.staff_edit_student_view, name='staff_edit_student_view'),
-    path('staff/students/<int:student_id>/delete/', views.staff_delete_student_view, name='staff_delete_student_view'),
+    path('staff/students/<int:student_id>/edit/', views.edit_student_view, name='edit_student_view'),
+    path('staff/students/<int:student_id>/delete/', views.delete_student_view, name='delete_student_view'),
 
 ]
