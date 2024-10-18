@@ -232,22 +232,29 @@ def students_in_section_view(request, section_id):
 
 # View to edit a student
 @login_required
-@user_passes_test(lambda u: u.role == 'hod')
+@user_passes_test(lambda u: u.role in ('hod', 'staff'))
 def edit_student_view(request, student_id):
     student = get_object_or_404(CustomUser, id=student_id, role='student')
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
-            return redirect('users:sections_by_year_view', student.year.id)
+            if request.user.role == 'hod':
+                return redirect('users:sections_by_year_view', student.year.id)
+            else:
+                return redirect('users:redirection')
     else:
         form = CustomUserCreationForm(instance=student)
     
-    return render(request, 'edit_student.html', {'form': form, 'student': student})
+    if request.user.role == 'hod':
+        return render(request, 'edit_student.html', {'form': form, 'student': student}) 
+    else:
+        return render(request, 'staff_edit_student.html', {'form': form, 'student': student})
+
 
 # HOD can delete a student
 @login_required
-@user_passes_test(lambda u: u.role == 'hod')
+@user_passes_test(lambda u: u.role in ('hod', 'staff'))
 def delete_student_view(request, student_id):
     try:
         student = CustomUser.objects.get(id=student_id, role='student')
@@ -256,9 +263,15 @@ def delete_student_view(request, student_id):
     
     if request.method == 'POST':
         student.delete()
-        return redirect('users:sections_by_year_view', student.year.id)
+        if request.user.role == 'hod':
+            return redirect('users:sections_by_year_view', student.year.id)
+        else:
+            return redirect('users:redirection')
+    if request.user.role == 'hod':
+        return render(request, 'delete_student.html', {'student': student})
+    else:
+        return render(request, 'staff_delete_student.html', {'student': student})
 
-    return render(request, 'delete_student.html', {'student': student})
 
 @login_required
 @user_passes_test(lambda u: u.role in ('hod', 'staff'))
@@ -283,6 +296,7 @@ def add_student_view(request, section_id):
         form = CustomUserCreationForm()
 
     return render(request, 'add_student.html', {'form': form, 'section': section, 'year': year})
+    
 
 @login_required
 @user_passes_test(lambda u: u.role == 'hod')
@@ -335,34 +349,34 @@ def view_students(request, section_id):
 def view_student_details(request, student_id):
     student = get_object_or_404(CustomUser, id=student_id, role='student')
     return render(request, 'user_detail.html', {'user': student})
+#change if possible, hod alread has this view
 
-
-@login_required
-@user_passes_test(lambda u: u.role == 'staff')
-def staff_delete_student_view(request, student_id):
-    try:
-        student = CustomUser.objects.get(id=student_id, role='student')
-    except CustomUser.DoesNotExist:
-        raise Http404("Student not found")
+# @login_required
+# @user_passes_test(lambda u: u.role == 'staff')
+# def staff_delete_student_view(request, student_id):
+#     try:
+#         student = CustomUser.objects.get(id=student_id, role='student')
+#     except CustomUser.DoesNotExist:
+#         raise Http404("Student not found")
     
-    if request.method == 'POST':
-        student.delete()
-        return redirect('users:redirection')
+#     if request.method == 'POST':
+#         student.delete()
+#         return redirect('users:redirection')
 
-    return render(request, 'staff_delete_student.html', {'student': student})
+#     return render(request, 'staff_delete_student.html', {'student': student})
 
-@login_required
-@user_passes_test(lambda u: u.role == 'staff')
-def staff_edit_student_view(request, student_id):
-    student = get_object_or_404(CustomUser, id=student_id, role='student')
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, instance=student)
-        if form.is_valid():
-            form.save()
-            return redirect('users:redirection')
-    else:
-        form = CustomUserCreationForm(instance=student)
+# @login_required
+# @user_passes_test(lambda u: u.role == 'staff')
+# def staff_edit_student_view(request, student_id):
+#     student = get_object_or_404(CustomUser, id=student_id, role='student')
+#     if request.method == 'POST':
+#         form = CustomUserCreationForm(request.POST, instance=student)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('users:redirection')
+#     else:
+#         form = CustomUserCreationForm(instance=student)
     
-    return render(request, 'staff_edit_student.html', {'form': form, 'student': student})
+#     return render(request, 'staff_edit_student.html', {'form': form, 'student': student})
 
 
