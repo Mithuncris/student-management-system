@@ -16,7 +16,6 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('home/',views.home_view,name="home"),
     path('student_dashboard/', views.student_view, name='student_dashboard'),
-    path('staff_dashboard/', views.staff_view, name='staff_dashboard'),
     path('hod_dashboard/', views.hod_view, name='hod_dashboard'),
     path('manage_staff/', views.manage_staff_view, name='manage_staff'),
     path('hod_dashboard/staff/<int:staff_id>/edit/', views.edit_staff_view, name='edit_staff'),
@@ -31,4 +30,14 @@ urlpatterns = [
     path('redirection/',views.redirect_users, name='redirection'),
     path('year/<int:year_id>/add_section/', views.add_section, name='add_section'),
     path('section/<int:section_id>/delete/', views.delete_section, name='delete_section'),
+
+    #for staff 
+    path('staff_dashboard/', views.staff_view, name='staff_dashboard'),
+    path('staff/classes/', views.view_classes, name='view_classes'),
+    path('staff/sections/<int:section_id>/students/', views.view_students, name='view_students'),
+    path('staff/sections/<int:section_id>/add_student/', views.add_student_view, name='staff_add_student'),
+    path('staff/students/<int:student_id>/view/', views.view_student_details, name='view_student_details'),
+    path('staff/students/<int:student_id>/edit/', views.staff_edit_student_view, name='staff_edit_student_view'),
+    path('staff/students/<int:student_id>/delete/', views.staff_delete_student_view, name='staff_delete_student_view'),
+
 ]

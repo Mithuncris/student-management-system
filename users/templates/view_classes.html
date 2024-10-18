@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}View Classes{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Available Classes</h2>
+    <ul class="list-group">
+        {% for class in classes %}
+        <li class="list-group-item">
+            <a href="{% url 'users:view_students' class.id %}" class='btn'>{{ class.name }} ({{ class.year.name }})</a>
+        </li>
+        {% endfor %} 
+    </ul>
+</div>
+{% endblock %}
