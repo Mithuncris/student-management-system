@@ -1,32 +1,37 @@
 {% extends 'base.html' %}
-
 {% block title %}Staff Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h1 class="mb-4">Welcome to the Staff Dashboard</h1>
+<div class="container">
+    <h2>Staff Dashboard</h2>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                Class Management
-            </div>
-            <div class="card-body">
-                <p>You can manage your class and student details here.</p>
-                <a href="#" class="btn btn-primary">Manage Class</a>
-                <a href="#" class="btn btn-secondary">View Attendance</a>
-            </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Class Management</h4>
         </div>
-
-        <div class="card mb-4">
-            <div class="card-header">
-                Student Performance
-            </div>
-            <div class="card-body">
-                <p>View and update students' internal marks here.</p>
-                <a href="#" class="btn btn-primary">Update Marks</a>
-            </div>
+        <div class="card-body">
+            <a href="{% url 'users:view_classes' %}" class="btn btn-primary">View Classes</a>
         </div>
     </div>
+
+     {% comment %} <div class="card mb-4">
+        <div class="card-header">
+            <h4>Student Management</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'users:view_students' %}" class="btn btn-info">View Students</a>
+            <a href="{% url 'users:add_student' %}" class="btn btn-success">Add Student</a>
+        </div>
+    </div>  {% endcomment %}
+
+    {% comment %} <div class="card mb-4">
+        <div class="card-header">
+            <h4>Student Actions</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'users:edit_student' %}" class="btn btn-warning">Edit Student</a>
+            <a href="{% url 'users:delete_student' %}" class="btn btn-danger">Delete Student</a>
+        </div>
+    </div> {% endcomment %}
 </div>
 {% endblock %}

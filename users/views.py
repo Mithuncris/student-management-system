@@ -29,7 +29,7 @@ def student_view(request):
     return render(request, 'student_dashboard.html')
 
 @login_required
-@permission_required('users.can_manage_staff', raise_exception=True)
+@user_passes_test(is_staff)
 def staff_view(request):
     return render(request, 'staff_dashboard.html')
 
@@ -205,8 +205,6 @@ def delete_staff_view(request, staff_id):
 
 @login_required
 @user_passes_test(is_hod)
-@login_required
-@user_passes_test(is_hod)
 def yearwise_sections_view(request):
     years = Year.objects.all()  
     return render(request, 'yearwise_sections.html', {'years': years})
@@ -263,7 +261,7 @@ def delete_student_view(request, student_id):
     return render(request, 'delete_student.html', {'student': student})
 
 @login_required
-@user_passes_test(lambda u: u.role == 'hod')
+@user_passes_test(lambda u: u.role in ('hod', 'staff'))
 def add_student_view(request, section_id):
 
     section = get_object_or_404(Section, id=section_id)
@@ -277,7 +275,10 @@ def add_student_view(request, section_id):
             user.year = year        
             user.section = section  
             user.save()
-            return redirect('users:sections_by_year_view', year.id)
+            if request.user.role == 'hod':
+                return redirect('users:sections_by_year_view', year.id)
+            else:
+                return redirect('users:redirection')
     else:
         form = CustomUserCreationForm()
 
@@ -290,6 +291,8 @@ def user_detail_view(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
     return render(request, 'user_detail.html', {'user': user})
 
+@login_required
+@user_passes_test(lambda u: u.role == 'hod')
 def add_section(request, year_id):
     year = Year.objects.get(id=year_id)
     if request.method == 'POST':
@@ -303,8 +306,63 @@ def add_section(request, year_id):
         form = SectionForm()
     return render(request, 'add_section.html', {'form': form, 'year': year})
 
+@login_required
+@user_passes_test(lambda u: u.role == 'hod')
 def delete_section(request, section_id):
     section = get_object_or_404(Section, id=section_id)
     year_id = section.year.id  
     section.delete()
     return redirect('users:sections_by_year_view', year_id=year_id)
+
+@login_required
+@user_passes_test(lambda u: u.role in ['hod', 'staff'])
+def view_classes(request):
+    classes = Section.objects.all()  
+    return render(request, 'view_classes.html', {'classes': classes})
+
+@login_required
+@user_passes_test(lambda u: u.role == 'staff' or u.role == 'hod')
+def view_students(request, section_id):
+    section = get_object_or_404(Section, id=section_id)
+    students = CustomUser.objects.filter(section=section, role='student')
+    return render(request, 'view_students.html', {
+        'students': students, 
+        'section': section
+    })
+
+@login_required
+@user_passes_test(lambda u: u.role == 'staff' or u.role == 'hod')
+def view_student_details(request, student_id):
+    student = get_object_or_404(CustomUser, id=student_id, role='student')
+    return render(request, 'user_detail.html', {'user': student})
+
+
+@login_required
+@user_passes_test(lambda u: u.role == 'staff')
+def staff_delete_student_view(request, student_id):
+    try:
+        student = CustomUser.objects.get(id=student_id, role='student')
+    except CustomUser.DoesNotExist:
+        raise Http404("Student not found")
+    
+    if request.method == 'POST':
+        student.delete()
+        return redirect('users:redirection')
+
+    return render(request, 'staff_delete_student.html', {'student': student})
+
+@login_required
+@user_passes_test(lambda u: u.role == 'staff')
+def staff_edit_student_view(request, student_id):
+    student = get_object_or_404(CustomUser, id=student_id, role='student')
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return redirect('users:redirection')
+    else:
+        form = CustomUserCreationForm(instance=student)
+    
+    return render(request, 'staff_edit_student.html', {'form': form, 'student': student})
+
+
